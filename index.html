@@ -354,12 +354,17 @@
                 font-size: 13px;
             }
 
-            /* Sidebar Mobile - Auto Collapse */
+            /* Sidebar Mobile - Starts Collapsed */
             .sidebar-controls {
                 width: 60px;
                 padding: 12px;
                 left: 10px;
                 top: 10px;
+            }
+
+            /* Force collapsed state on mobile */
+            .sidebar-controls:not(.collapsed) {
+                width: 60px;
             }
 
             .sidebar-controls .btn-text,
@@ -402,12 +407,53 @@
                 padding: 12px 15px;
             }
 
-            /* Legend Mobile */
+            /* Legend Mobile - Collapsible */
             .legend {
-                bottom: 20px;
+                bottom: 15px;
                 left: 15px;
-                padding: 15px 18px;
+                padding: 12px 15px;
                 font-size: 12px;
+                max-width: calc(100% - 30px);
+            }
+
+            .legend.collapsed-mobile .widget-content {
+                display: none;
+            }
+
+            .legend.collapsed-mobile {
+                padding: 8px 12px;
+                min-width: auto;
+            }
+
+            .legend .widget-toggle {
+                display: flex;
+            }
+
+            .legend.collapsed-mobile h3 {
+                display: inline-block;
+                margin: 0;
+                font-size: 12px;
+                padding-right: 35px;
+            }
+
+            .legend:not(.collapsed-mobile) h3 {
+                margin-bottom: 10px;
+            }
+
+            .collapsed-mobile .chevron-up {
+                display: block;
+            }
+
+            .collapsed-mobile .chevron-down {
+                display: none !important;
+            }
+
+            :not(.collapsed-mobile) .chevron-up {
+                display: none !important;
+            }
+
+            :not(.collapsed-mobile) .chevron-down {
+                display: block !important;
             }
 
             .legend h3 {
@@ -426,23 +472,43 @@
                 height: 14px;
             }
 
-            /* Stats Mobile */
+            /* Stats Mobile - Collapsible */
             #stats {
-                bottom: 20px;
+                bottom: 15px;
                 right: 15px;
-                padding: 15px 18px;
+                padding: 12px 15px;
+                max-width: calc(50% - 20px);
+            }
+
+            #stats.collapsed-mobile .widget-content {
+                display: none;
+            }
+
+            #stats.collapsed-mobile {
+                padding: 8px 12px;
+                min-width: auto;
+            }
+
+            #stats .widget-toggle {
+                display: flex;
+            }
+
+            #stats.collapsed-mobile .label {
+                display: inline;
+                font-size: 11px;
             }
 
             #stats .stat {
-                font-size: 12px;
+                font-size: 11px;
+                margin: 4px 0;
             }
 
             #stats .number {
-                font-size: 22px;
+                font-size: 18px;
             }
 
             #stats .label {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             /* Info Panel Mobile */
@@ -478,19 +544,36 @@
 
             /* Content Cards Mobile */
             .content-card {
-                padding: 30px 20px;
+                padding: 25px 15px;
+                overflow-x: hidden;
             }
 
             .content-card h1 {
-                font-size: 32px;
+                font-size: 28px;
+                word-wrap: break-word;
             }
 
             .content-card h2 {
-                font-size: 24px;
+                font-size: 22px;
+                word-wrap: break-word;
             }
 
             .content-card .intro {
-                font-size: 16px;
+                font-size: 15px;
+            }
+
+            .content-card p,
+            .content-card li {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+
+            /* Fix all images and media */
+            .content-card img,
+            .content-card svg,
+            .reunion-photo img {
+                max-width: 100%;
+                height: auto;
             }
 
             /* Reunion Photo Mobile */
@@ -695,12 +778,20 @@
             transition: transform 0.3s;
         }
 
-        .sidebar-controls.collapsed .sidebar-toggle {
-            padding: 12px;
+        .sidebar-controls.collapsed .icon-expand {
+            display: block;
         }
 
-        .sidebar-controls.collapsed .sidebar-toggle svg {
-            transform: rotate(90deg);
+        .sidebar-controls.collapsed .icon-collapse {
+            display: none;
+        }
+
+        .sidebar-controls:not(.collapsed) .icon-expand {
+            display: none;
+        }
+
+        .sidebar-controls:not(.collapsed) .icon-collapse {
+            display: block;
         }
 
         .sidebar-controls::-webkit-scrollbar {
@@ -902,6 +993,8 @@
             position: relative;
             background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(10px);
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .content-section {
@@ -1137,6 +1230,34 @@
             border-radius: 16px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .widget-toggle {
+            display: none; /* Hidden on desktop */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .widget-toggle:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .widget-content {
+            transition: all 0.3s ease;
         }
 
         .legend h3 {
@@ -2228,12 +2349,13 @@
                 <svg id="tree-svg"></svg>
                 
                 <!-- Sidebar Controls -->
-                <div class="sidebar-controls" id="sidebar-controls">
+                <div class="sidebar-controls collapsed" id="sidebar-controls">
                     <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="3" y1="12" x2="21" y2="12"/>
-                            <line x1="3" y1="6" x2="21" y2="6"/>
-                            <line x1="3" y1="18" x2="21" y2="18"/>
+                        <svg class="icon-expand" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                        <svg class="icon-collapse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                            <polyline points="15 18 9 12 15 6"/>
                         </svg>
                     </button>
 
@@ -2320,28 +2442,44 @@
                     <div id="search-suggestions" class="search-suggestions"></div>
                     <div id="search-message" class="search-message"></div>
                 </div>
-                <div class="legend">
-                    <h3>Legend</h3>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #3498db;"></div>
-                        <span>Male</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #e74c3c;"></div>
-                        <span>Female</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #9b59b6;"></div>
-                        <span>Unknown</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #d4af37; border-color: #2d1b4e; border-width: 3px;"></div>
-                        <span>Patriarch</span>
+                <div class="legend collapsed-mobile" id="legend">
+                    <button class="widget-toggle" onclick="toggleWidget('legend')" title="Toggle legend">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline class="chevron-up" points="18 15 12 9 6 15"/>
+                            <polyline class="chevron-down" points="6 9 12 15 18 9" style="display: none;"/>
+                        </svg>
+                    </button>
+                    <div class="widget-content">
+                        <h3>Legend</h3>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #3498db;"></div>
+                            <span>Male</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #e74c3c;"></div>
+                            <span>Female</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #9b59b6;"></div>
+                            <span>Unknown</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #d4af37; border-color: #2d1b4e; border-width: 3px;"></div>
+                            <span>Patriarch</span>
+                        </div>
                     </div>
                 </div>
-                <div id="stats">
-                    <div class="stat"><span class="label">Family Members:</span> <span class="number" id="total-count">0</span></div>
-                    <div class="stat"><span class="label">Generations:</span> <span class="number" id="gen-count">0</span></div>
+                <div id="stats" class="collapsed-mobile">
+                    <button class="widget-toggle" onclick="toggleWidget('stats')" title="Toggle stats">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline class="chevron-up" points="18 15 12 9 6 15"/>
+                            <polyline class="chevron-down" points="6 9 12 15 18 9" style="display: none;"/>
+                        </svg>
+                    </button>
+                    <div class="widget-content">
+                        <div class="stat"><span class="label">Family Members:</span> <span class="number" id="total-count">0</span></div>
+                        <div class="stat"><span class="label">Generations:</span> <span class="number" id="gen-count">0</span></div>
+                    </div>
                 </div>
                 <div id="info-panel">
                     <button class="close-btn" onclick="closeInfo()">×</button>
@@ -2926,18 +3064,32 @@
         }
 
         function fitToScreen() {
-            const bounds = g.node().getBBox();
-            const fullWidth = width;
-            const fullHeight = height;
-            const widthScale = fullWidth / bounds.width;
-            const heightScale = fullHeight / bounds.height;
-            const scale = 0.9 * Math.min(widthScale, heightScale);
-            const translateX = (fullWidth - bounds.width * scale) / 2 - bounds.x * scale;
-            const translateY = (fullHeight - bounds.height * scale) / 2 - bounds.y * scale;
-            
-            svg.transition()
-                .duration(750)
-                .call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale));
+            try {
+                const bounds = g.node().getBBox();
+                
+                // Check if bounds are valid
+                if (!bounds || bounds.width === 0 || bounds.height === 0) {
+                    console.log('Invalid bounds, retrying...');
+                    setTimeout(fitToScreen, 100);
+                    return;
+                }
+                
+                const fullWidth = width;
+                const fullHeight = height;
+                const widthScale = fullWidth / bounds.width;
+                const heightScale = fullHeight / bounds.height;
+                const scale = 0.9 * Math.min(widthScale, heightScale);
+                const translateX = (fullWidth - bounds.width * scale) / 2 - bounds.x * scale;
+                const translateY = (fullHeight - bounds.height * scale) / 2 - bounds.y * scale;
+                
+                svg.transition()
+                    .duration(750)
+                    .call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale));
+            } catch (error) {
+                console.error('Error in fitToScreen:', error);
+                // Retry after a delay
+                setTimeout(fitToScreen, 100);
+            }
         }
 
         function zoomIn() {
@@ -3089,14 +3241,19 @@
             });
         }
 
-        // Auto-fit on load
-        setTimeout(fitToScreen, 100);
-
-        // Handle resize
+        // Handle resize - but don't reload on mobile (causes issues)
         let resizeTimer;
         window.addEventListener("resize", () => {
+            // Skip reload on mobile devices and during orientation changes
+            if (window.innerWidth <= 768) return;
+            
             clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => location.reload(), 250);
+            resizeTimer = setTimeout(() => {
+                // Only reload if it's a significant desktop resize
+                if (window.innerWidth > 768) {
+                    location.reload();
+                }
+            }, 500);
         });
 
         // View switching functionality
@@ -3145,6 +3302,11 @@
 
             drawNodes(root, 'chart');
             initializeSearch();
+            
+            // Multiple attempts to fit screen with increasing delays
+            setTimeout(() => fitToScreen(), 50);
+            setTimeout(() => fitToScreen(), 200);
+            setTimeout(() => fitToScreen(), 500);
         }
 
         function drawChartView() {
@@ -3171,6 +3333,11 @@
 
             drawNodes(root);
             initializeSearch();
+            
+            // Multiple attempts to fit screen with increasing delays
+            setTimeout(() => fitToScreen(), 50);
+            setTimeout(() => fitToScreen(), 200);
+            setTimeout(() => fitToScreen(), 500);
         }
 
         function drawNodes(root, viewType = 'tree') {
@@ -3244,6 +3411,14 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar-controls');
             sidebar.classList.toggle('collapsed');
+        }
+
+        // Widget toggle for mobile
+        function toggleWidget(widgetId) {
+            const widget = document.getElementById(widgetId);
+            if (widget) {
+                widget.classList.toggle('collapsed-mobile');
+            }
         }
 
         // Section navigation
